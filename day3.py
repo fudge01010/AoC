@@ -205,9 +205,9 @@ class MapNumber:
 def is_symbol_surrounding(x: int, y: int) -> bool:
     # double loop to check n-1 to n+1, vertically and horizontally
 
-    for x_ind in range(max(0, x - 1), min(MAX_BOARD_X - 1, x + 1) + 1):
+    for y_ind in range(max(0, y - 1), min(MAX_BOARD_Y - 1, y + 1) + 1):
         # x_ind ranges from x-1 to x+1, but within board surrounds (0 <= x_ind < MAX_BOARD_X)
-        for y_ind in range(max(0, y - 1), min(MAX_BOARD_Y - 1, y + 1) + 1):
+        for x_ind in range(max(0, x- 1), min(MAX_BOARD_X - 1, x + 1) + 1):
             if input_data[y_ind][x_ind] in valid_symbols:
                 return True
     # we never left the loop, so no symbol is surrounding this position
@@ -218,22 +218,27 @@ def is_symbol_surrounding(x: int, y: int) -> bool:
 # print(f"Should test True [3, 1]: {is_symbol_surrounding(3,1)}")
 map_numbers: [MapNumber] = []
 
-for col_idx, col in enumerate(input_data):
+for row_idx, row in enumerate(input_data):
     row_numb = []
     current_numb: MapNumber = None
-    for row_idx, r_val in enumerate(col):
+    for col_idx, c_val in enumerate(row):
         # col_idx and row_idx are coords.
         # r_val is the current "char" we're testing
-        if r_val.isnumeric() and row_numb == []:
+        if c_val.isnumeric() and row_numb == []:
             # start of a number and we aren't "tracking" a number
             # take co-ords of it
             current_numb = MapNumber()
-            current_numb.set_origin(row_idx, col_idx)
-            row_numb.append(r_val)
-        elif r_val.isnumeric():
-            row_numb.append(r_val)
-        elif not r_val.isnumeric() and current_numb is not None:
+            current_numb.set_origin(col_idx, row_idx)
+            row_numb.append(c_val)
+        elif c_val.isnumeric():
+            row_numb.append(c_val)
+        elif not c_val.isnumeric() and current_numb is not None:
             # not numeric, but we have a "pending" number. Add to list
+            current_numb.set_val(row_numb)
+            map_numbers.append(current_numb)
+            current_numb = None
+            row_numb = []
+        if col_idx == MAX_BOARD_X-1 and row_numb != []:
             current_numb.set_val(row_numb)
             map_numbers.append(current_numb)
             current_numb = None
@@ -253,4 +258,5 @@ for test_number in map_numbers:
         part_numbers.append(test_number.val)
     print(f"test number {test_number.val} is {is_part_number}")
 
+print(part_numbers)
 print(f"sum of part numbers: {sum(part_numbers)}")
