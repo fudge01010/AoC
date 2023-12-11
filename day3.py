@@ -207,18 +207,18 @@ class MapNumber:
 
     def number_len(self) -> int:
         return len(str(self.val))
-    
+
     def get_x(self) -> int:
         return self.x
-    
+
     def get_y(self) -> int:
         return self.y
-    
+
     def get_end_x(self) -> int:
-        return self.x + self.number_len()-1
-    
+        return self.x + self.number_len() - 1
+
     def get_coords(self) -> [(int, int)]:
-        return [(1,2)]
+        return [(1, 2)]
 
 
 def is_symbol_surrounding(x: int, y: int) -> bool:
@@ -231,8 +231,6 @@ def is_symbol_surrounding(x: int, y: int) -> bool:
                 return True
     # we never left the loop, so no symbol is surrounding this position
     return False
-
-
 
 
 # print(f"Should test False [0, 0]: {is_symbol_surrounding(0,0)}")
@@ -282,7 +280,7 @@ for test_number in map_numbers:
 # print(part_numbers)
 print(f"sum of part numbers: {sum(part_numbers)}")
 # sum of part numbers: 549908
- 
+
 ## part 2
 # find stars, search numbers around, if num=2 then find ratio, add ratio to summed list
 gear_locs = []
@@ -296,9 +294,18 @@ answer_gear_ratios = 0
 nums_nearby = []
 for gear_x, gear_y in gear_locs:
     print(f"gear at {gear_x},{gear_y}")
-    testlist = [x for x in map_numbers if (x.get_end_x() >= gear_x-1) and (x.get_x() <= gear_x+1) and (x.get_y() >= gear_y-1) and (x.get_y() <= gear_y+1)]
+    testlist = [
+        x
+        for x in map_numbers
+        if (x.get_end_x() >= gear_x - 1)
+        and (x.get_x() <= gear_x + 1)
+        and (x.get_y() >= gear_y - 1)
+        and (x.get_y() <= gear_y + 1)
+    ]
     if len(testlist) == 2:
         # two gears
-        answer_gear_ratios += (testlist[0].get_val() * testlist[1].get_val())
-        print(f"gear at {gear_x}, {gear_y} has {testlist[0].get_val()} and {testlist[1].get_val()}")
+        answer_gear_ratios += testlist[0].get_val() * testlist[1].get_val()
+        print(
+            f"gear at {gear_x}, {gear_y} has {testlist[0].get_val()} and {testlist[1].get_val()}"
+        )
 print(f"Sum of gear ratios: {answer_gear_ratios}")
