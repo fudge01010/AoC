@@ -171,6 +171,10 @@ valid_symbols = {
     "-",
     "+",
 }
+
+valid_gear = {
+    "*",
+}
 # logic:
 # find all number locations, store as list of strings
 # after we have all numbers, check each index to see if there is a surrounding symbol
@@ -195,11 +199,26 @@ class MapNumber:
     def set_val(self, value: [str]) -> None:
         self.val = int("".join(x for x in value))
 
+    def get_val(self) -> int:
+        return self.val
+
     def get_origin(self) -> [int, int]:
         return [self.x, self.y]
 
     def number_len(self) -> int:
         return len(str(self.val))
+    
+    def get_x(self) -> int:
+        return self.x
+    
+    def get_y(self) -> int:
+        return self.y
+    
+    def get_end_x(self) -> int:
+        return self.x + self.number_len()-1
+    
+    def get_coords(self) -> [(int, int)]:
+        return [(1,2)]
 
 
 def is_symbol_surrounding(x: int, y: int) -> bool:
@@ -207,11 +226,13 @@ def is_symbol_surrounding(x: int, y: int) -> bool:
 
     for y_ind in range(max(0, y - 1), min(MAX_BOARD_Y - 1, y + 1) + 1):
         # x_ind ranges from x-1 to x+1, but within board surrounds (0 <= x_ind < MAX_BOARD_X)
-        for x_ind in range(max(0, x- 1), min(MAX_BOARD_X - 1, x + 1) + 1):
+        for x_ind in range(max(0, x - 1), min(MAX_BOARD_X - 1, x + 1) + 1):
             if input_data[y_ind][x_ind] in valid_symbols:
                 return True
     # we never left the loop, so no symbol is surrounding this position
     return False
+
+
 
 
 # print(f"Should test False [0, 0]: {is_symbol_surrounding(0,0)}")
@@ -238,7 +259,7 @@ for row_idx, row in enumerate(input_data):
             map_numbers.append(current_numb)
             current_numb = None
             row_numb = []
-        if col_idx == MAX_BOARD_X-1 and row_numb != []:
+        if col_idx == MAX_BOARD_X - 1 and row_numb != []:
             current_numb.set_val(row_numb)
             map_numbers.append(current_numb)
             current_numb = None
@@ -256,7 +277,28 @@ for test_number in map_numbers:
             break
     if is_part_number:
         part_numbers.append(test_number.val)
-    print(f"test number {test_number.val} is {is_part_number}")
+    # print(f"test number {test_number.val} is {is_part_number}")
 
-print(part_numbers)
+# print(part_numbers)
 print(f"sum of part numbers: {sum(part_numbers)}")
+# sum of part numbers: 549908
+ 
+## part 2
+# find stars, search numbers around, if num=2 then find ratio, add ratio to summed list
+gear_locs = []
+for row_idx, row in enumerate(input_data):
+    for col_idx, c_val in enumerate(row):
+        if c_val in valid_gear:
+            gear_locs.append((col_idx, row_idx))
+# print(gear_locs)
+
+answer_gear_ratios = 0
+nums_nearby = []
+for gear_x, gear_y in gear_locs:
+    print(f"gear at {gear_x},{gear_y}")
+    testlist = [x for x in map_numbers if (x.get_end_x() >= gear_x-1) and (x.get_x() <= gear_x+1) and (x.get_y() >= gear_y-1) and (x.get_y() <= gear_y+1)]
+    if len(testlist) == 2:
+        # two gears
+        answer_gear_ratios += (testlist[0].get_val() * testlist[1].get_val())
+        print(f"gear at {gear_x}, {gear_y} has {testlist[0].get_val()} and {testlist[1].get_val()}")
+print(f"Sum of gear ratios: {answer_gear_ratios}")
